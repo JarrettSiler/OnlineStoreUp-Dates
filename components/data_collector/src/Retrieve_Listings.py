@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup as bs #for navigating the HTML
-import sys
+import sys,os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -11,7 +11,9 @@ chrome_options = Options()
 chrome_options.add_argument('--headless')
 chrome_options.add_argument('--disable-gpu')
 
-sys.path.append(r'C:\Users\Jarrett\Desktop\CONSOLE\School 2\CSCA5028 ASABD\Final\OnlineStoreUp-Dates')
+current_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.abspath(os.path.join(current_dir, "..", "..", ".."))
+sys.path.append(root_dir)
 
 # Now try importing your module
 from components.data_collector.src.Listing import Listing #TODO -fix imports for docker use

@@ -1,9 +1,13 @@
-import os, os.path
+import os,sys, os.path
 from sqlalchemy import create_engine, Column, String, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
+current_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.abspath(os.path.join(current_dir, "..", "..", ".."))
+sys.path.append(root_dir)
+
 
 class dbEntry(Base):
     __tablename__ = 'Listings'
@@ -15,15 +19,15 @@ class dbEntry(Base):
     itemURL = Column('itemURL', String)
 
 def is_existing(fileName):
-    path = f"C:\\Users\\Jarrett\\Desktop\\CONSOLE\\School 2\\CSCA5028 ASABD\\Final\\OnlineStoreUp-Dates\\database_storage\\Watchlist\\{fileName}.db"
+    path = os.path.join(root_dir, 'database_storage', 'Watchlist', f"{fileName}.db")
     if os.path.isfile(path):
         return True
     else:
         return False
     
 def check_for_new_items(fileName):
-    watchlist_path = f"C:\\Users\\Jarrett\\Desktop\\CONSOLE\\School 2\\CSCA5028 ASABD\\Final\\OnlineStoreUp-Dates\\database_storage\\Watchlist\\{fileName}.db"
-    tba_path = f"C:\\Users\\Jarrett\\Desktop\\CONSOLE\\School 2\\CSCA5028 ASABD\\Final\\OnlineStoreUp-Dates\\database_storage\\To Be Analyzed\\{fileName}.db"
+    watchlist_path = os.path.join(root_dir, 'database_storage', 'Watchlist', f"{fileName}.db")
+    tba_path = os.path.join(root_dir, 'database_storage', 'To Be Analyzed', f"{fileName}.db")
 
     #create engines
     watchlist_engine = create_engine(f"sqlite:///{watchlist_path}", echo=True)
@@ -78,7 +82,7 @@ def check_for_new_items(fileName):
     return new_items
 
 def get_item_count(fileName): #returns number of items in db
-    watchlist_path = f"C:\\Users\\Jarrett\\Desktop\\CONSOLE\\School 2\\CSCA5028 ASABD\\Final\\OnlineStoreUp-Dates\\database_storage\\Watchlist\\{fileName}.db"
+    watchlist_path = os.path.join(root_dir, 'database_storage', 'Watchlist', f"{fileName}.db")
     watchlist_engine = create_engine(f"sqlite:///{watchlist_path}", echo=True)
     
     WLSession = sessionmaker(bind=watchlist_engine)

@@ -50,7 +50,7 @@ def graceful_shutdown(signum, frame):
 def listen_for_watchlist_updates():
     global active_watchlists
 
-    directory_path = f"C:\\Users\\Jarrett\\Desktop\\CONSOLE\\School 2\\CSCA5028 ASABD\\Final\\OnlineStoreUp-Dates\\database_storage\\Watchlist"
+    directory_path = os.path.join(root_dir, 'database_storage', 'Watchlist')
     files = os.listdir(directory_path)
    
     active_watchlists.clear() #reset the list
@@ -154,7 +154,7 @@ def delete_watchlist():
             watchlistItem = (watchlistClip.split(" in")[0]).replace(" ","_")
             watchlistZip = watchlistClip.split("in ")[1]
             search = watchlistItem + '_' + watchlistZip
-            dst = f"C:\\Users\\Jarrett\\Desktop\\CONSOLE\\School 2\\CSCA5028 ASABD\\Final\\OnlineStoreUp-Dates\\database_storage\\Watchlist\\{search}.db"
+            dst = os.path.join(root_dir, 'database_storage', 'Watchlist', f"{search}.db")
             try:
                 #os.unlink(dst)
                 os.remove(dst)
