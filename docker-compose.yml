@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "5672:5672"  # RabbitMQ main port
+      - "15672:15672"  # RabbitMQ management plugin port
+    #environment:
+      #RABBITMQ_DEFAULT_USER: "guest"
+      #RABBITMQ_DEFAULT_PASS: "guest"
+
+  web_server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./applications/basic_server/src/main/start:/project/app  # Mount your app directory into the container
+    ports:
+      - "8001:80"  # Map port 80 from the container to port 8001 on the host
+    working_dir: /project  # Set the working directory within the container
+    command: ["python", "App.py"]  # Specify the entry point script
+
+  data_collector:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./applications/data_collector_server/src/main/start:/project/app
+    ports:
+      - "8002:80"
+    working_dir: /project
+    command: ["python", "App.py"]
+
+  data_analyzer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./applications/data_analyzer_server/src/main/start:/project/app
+    ports:
+      - "8003:80"
+    working_dir: /project
+    command: ["python", "App.py"]
