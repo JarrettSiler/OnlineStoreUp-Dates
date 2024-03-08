@@ -99,7 +99,7 @@ def process_message(body):
 #----------------------------------------------------------------------------------
 if __name__ == '__main__':
 
-    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672))
+    connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', 5672)) #TODO - replace with localhost
     channel = connection.channel()
     channel.queue_declare(queue='shopping')
 

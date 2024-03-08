@@ -21,7 +21,7 @@ lock = threading.Lock() #added to combat race issue
 #----------------------------------------------------------------------------------
 def setup_rabbitmq():
     try:
-        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672))
+        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', 5672)) #TODO- replace with localhost
         channel = connection.channel()
         channel.queue_declare(queue='shopping')
         channel.queue_declare(queue='new_items')
