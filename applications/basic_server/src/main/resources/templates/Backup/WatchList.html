@@ -1,0 +1,344 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="/styles.css">
+    <title>Create Watch List</title>
+</head>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+    }
+
+    .loader-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    .loader-bar {
+        width: 50%;
+        height: 20px;
+        background-color: green;
+        margin: 10px auto;
+    }
+
+    .split {
+        height: 100%;
+        width: 50%;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        overflow-x: hidden;
+        padding-top: 20px;
+    }
+
+    .left {
+        left: 0;
+    }
+
+    .right {
+        right: 0;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    .line {
+        border-left: 1px solid black;
+        height: 700px;
+    }
+
+    #watchlistList button {
+        margin-right: 10px;
+    }
+
+    /* Updated styles for the item notifications */
+    .notification {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+
+    .notification button {
+        float: left;
+        cursor: pointer;
+        background-color: #ff5555;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        margin-right: 8px;
+    }
+
+    .notification span {
+        font-weight: bold;
+        margin-right: 8px;
+    }
+
+    .notification a {
+        display: inline-block;
+        margin-top: 8px;
+    }
+
+</style>
+
+</style>
+
+<body>
+    <div class="split left">
+        <p class="center">Welcome To The Marketplace Updater</p>
+        <hr>
+        <p class="center">Create a New Watchlist</p>
+
+        <form class="center" action="/process_form" method="post" onsubmit="showLoadingBar(event)">
+            <ul style="list-style-type: none;">
+                <li>Search For: <input type="text" name="itemName" size="30" maxlength="25"></li>
+                <li>Zip Code: <input type="text" name="zipCode" size="30" maxlength="25"></li>
+            </ul>
+            <button type="submit"> Create Watchlist </button>
+            <br>
+            <br>
+            <p class="center">Note: watchlists may not appear below for up to 2 minutes while being initialized</p>
+            <br><br>
+            <p class="center">Active Watchlists</p>
+            <br>
+            <ul id="watchlistList" style="list-style-type: none;"></ul>
+        </form>
+    </div>
+
+    <div class="loader-container" id="loader-container" style="display: none;">
+        <div class="loader-text">DATA COLLECTOR GENERATING INITIAL RESULTS</div>
+        <div class="loader-bar" id="loader-bar"></div>
+    </div>
+
+    <div id="notificationContainer" class="split right">
+        <br><br><br>
+        <!-- Container for information notifications -->
+    </div>
+
+    <script>
+
+        // Active watchlists 
+
+        function updateWatchlists() {
+            fetch('/get_watchlists')
+                .then(response => response.json())
+                .then(data => {
+                    const watchlistList = document.getElementById('watchlistList');
+                    watchlistList.innerHTML = ''; // Clear existing list
+
+                    data.active_watchlists.forEach(watchlist => {
+                        const listItem = document.createElement('li');
+
+                        // Create a delete button
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.addEventListener('click', () => deleteWatchlist(watchlist));
+                        listItem.appendChild(deleteButton);
+
+                        // Create a span element for the watchlist text
+                        const watchlistText = document.createElement('span');
+                        watchlistText.textContent = watchlist;
+                        listItem.appendChild(watchlistText);
+
+                        watchlistList.appendChild(listItem);
+
+                        // Update item notifications for each watchlist
+                        updateItemNotifications(watchlist);
+                    });
+                })
+                .catch(error => console.error('Error updating watchlists:', error));
+        }
+
+        function deleteWatchlist(watchlist) {
+            // Send a request to delete the watchlist
+            fetch('/delete_watchlist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        watchlist
+                    }),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log(`Watchlist "${watchlist}" deleted successfully.`);
+                        updateWatchlists(); // Refresh the watchlists after deletion
+                    } else {
+                        console.error(`Failed to delete watchlist "${watchlist}".`);
+                    }
+                })
+                .catch(error => console.error('Error deleting watchlist:', error));
+        }
+
+        // Update watchlists on page load
+        updateWatchlists();
+
+        // Set an interval to periodically update the watchlists
+        setInterval(updateWatchlists, 10000); // Update every 10 seconds
+
+        //loading bar graphic
+
+        function showLoadingBar(event) {
+            // Prevent the default form submission behavior
+            event.preventDefault();
+
+            // Show the loading bar
+            const loaderContainer = document.getElementById('loader-container');
+            loaderContainer.style.display = 'block';
+
+            const loaderBar = document.getElementById('loader-bar');
+            let width = 0; // Initial width of the loading bar
+
+            function increaseWidth() {
+                if (width < 100) {
+                    width += 1; // Adjust the increment for the desired loading speed
+                    loaderBar.style.width = `${width}%`;
+
+                    // Continue increasing width after a short delay
+                    setTimeout(increaseWidth, 20); // Adjust the delay for the desired smoothness
+                }
+            }
+
+            // Start increasing the width
+            increaseWidth();
+
+            // Manually trigger the form submission after a short delay
+            setTimeout(() => {
+                event.target.submit();
+
+                // Hide the loading bar
+                loaderContainer.style.display = 'none';
+                loaderBar.style.width = '0'; // Reset the width for the next loading
+            }, 500);
+
+            // Simulate the data collection process
+            fetch('/process_form', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        itemName: event.target.itemName.value,
+                        zipCode: event.target.zipCode.value,
+                    }),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Request submitted successfully.');
+                    } else {
+                        console.error('Failed to submit request.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting request:', error);
+                });
+        }
+
+        // New item notifications
+
+        function updateItemNotifications(watchlist) {
+            // Fetch item data for the specified watchlist
+            fetch(`/get_items?watchlist=${watchlist}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Create or get the notification container
+                    let notificationContainer = document.getElementById('notificationContainer');
+
+                    if (!notificationContainer) {
+                        // If the container doesn't exist, create it
+                        notificationContainer = document.createElement('div');
+                        notificationContainer.id = 'notificationContainer';
+                        notificationContainer.className = 'split right';
+                        document.body.appendChild(notificationContainer); // Adjust the parent element if necessary
+                    }
+
+                    console.log(`Received data for ${watchlist}:`, data);
+
+                    // Check if data.items is defined and not empty
+                    if (data.items && data.items.length > 0) {
+                        // The container exists; proceed to update item notifications
+                        data.items.forEach(itemData => {
+                            // Check if the notification already exists
+                            const existingNotification = document.getElementById(`${watchlist}_${itemData.name}_notification`);
+
+                            if (!existingNotification) {
+                                // If the notification doesn't exist, create and append it
+                                createItemNotification(itemData, watchlist);
+                            }
+                        });
+                    } else {
+                        console.error(`No items data received for ${watchlist}.`);
+                    }
+                })
+                .catch(error => console.error(`Error updating item notifications for ${watchlist}:`, error));
+        }
+
+        function createItemNotification(itemData, watchlist) {
+            // Create a container div for the item notification
+            const notificationContainer = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+
+            // Create a delete button for the notification
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'X';
+            deleteButton.addEventListener('click', () => deleteItemNotification(notification, watchlist, itemData.name));
+            notification.appendChild(deleteButton);
+
+            // Create a span element for the watchlist text
+            const watchlistText = document.createElement('span');
+            watchlistText.textContent = watchlist;
+            notification.appendChild(document.createTextNode(`New Item Posted for search: ${watchlistText.textContent.split('for ')[1]}`));
+
+            // Create elements for item details
+            const itemName = document.createElement('span');
+            itemName.textContent = `Item Name: ${itemData.name}`;
+
+            const itemPrice = document.createElement('span');
+            itemPrice.textContent = `Item Price: ${itemData.price}`;
+
+            const itemLocation = document.createElement('span');
+            itemLocation.textContent = `Item Location: ${itemData.location}`;
+
+            const itemURL = document.createElement('a');
+            itemURL.href = itemData.url;
+            itemURL.textContent = 'Item URL - Example';
+
+            // Append elements to the notification container
+            notification.appendChild(itemName);
+            notification.appendChild(itemPrice);
+            notification.appendChild(itemLocation);
+            notification.appendChild(itemURL);
+
+            // Set a unique ID for the notification
+            notification.id = `${watchlist}_${itemData.name}_notification`;
+
+            // Append the notification to the container
+            notificationContainer.appendChild(notification);
+        }
+
+        function deleteItemNotification(notification, watchlist, itemName) {
+            // Remove the notification from the DOM
+            notification.remove();
+        }
+
+        function new_item_alerts(ch, method, properties, body) {
+            const messageData = JSON.parse(body);
+            const watchlist = messageData.watchlist;
+
+            // Create an item notification for the new item
+            updateItemNotifications(watchlist);
+        }
+    </script>
+</body>
+
+</html>

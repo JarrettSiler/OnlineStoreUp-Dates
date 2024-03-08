@@ -1,0 +1,134 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f2f2f2;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 100vh;
+}
+
+.left {
+    background-color: #fff;
+    color: #333;
+    padding: 30px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    position: relative;
+}
+
+.center {
+    text-align: center;
+}
+
+.right {
+    background-color: #f2f2f2;
+    padding: 30px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.line {
+    border-left: 2px solid #ccc;
+    height: 100%;
+    position: absolute;
+}
+
+form ul {
+    padding: 0;
+}
+
+form li {
+    margin-bottom: 20px;
+}
+
+.add-watchlist-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: 2px solid black;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-watchlist-button:hover {
+    background-color: #45a049;
+}
+
+.loader-container {
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 15px;
+}
+
+.loader-text {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.loader-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #4CAF50;
+    margin: 15px 0;
+}
+
+.notification {
+    margin: 15px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.notification button {
+    background-color: #ff5555;
+    color: white;
+    padding: 8px 12px;
+    border: 2px solid black;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 20px;
+}
+
+.notification button:hover {
+    background-color: #ff0000;
+}
+
+.notification span {
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.notification a {
+    display: block;
+    margin-top: 8px;
+    color: #4CAF50;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.notification a:hover {
+    color: #45a049;
+}
+
+.notification-container {
+    margin-top: 20px;
+}
+
+.new-item-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.new-item-list li {
+    margin-bottom: 10px;
+}

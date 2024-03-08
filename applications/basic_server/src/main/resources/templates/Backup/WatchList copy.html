@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+        <title>Create Watch List</title>
+    </head>
+<body>
+    <div class="split left">
+        <p class="center">Welcome To The Marketplace Updater</p>
+        <hr>
+        <p class="center">Create a New Watchlist</p>
+
+        <form class="center" action="/process_form" method="post" onsubmit="showLoadingBar(event)">
+            <ul style="list-style-type: none;">
+                <li>Search For: <input type="text" name="itemName" size="30" maxlength="25"></li>
+                <li>Zip Code: <input type="text" name="zipCode" size="30" maxlength="25"></li>
+            </ul>
+            <button type="submit"> Create Watchlist </button>
+            <br>
+            <br>
+            <p class="center">Note: watchlists may not appear below for up to 2 minutes while being initialized</p>
+            <br><br>
+            <p class="center">Active Watchlists</p>
+            <br>
+            <ul id="watchlistList" style="list-style-type: none;"></ul>
+        </form>
+    </div>
+
+    <div class="loader-container" id="loader-container" style="display: none;">
+        <div class="loader-bar" id="loader-bar"></div>
+    </div>
+
+    <div id="notificationContainer" class="split right">
+        <p class="center">Notifications</p>
+        <hr>
+        <br><br><br>
+        <!-- Container for information notifications -->
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

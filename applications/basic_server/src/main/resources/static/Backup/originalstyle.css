@@ -1,0 +1,79 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.loader-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.loader-bar {
+    width: 50%;
+    height: 20px;
+    background-color: green;
+    margin: 10px auto;
+}
+
+.split {
+    height: 100%;
+    width: 50%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+
+.left {
+    left: 0;
+}
+
+.right {
+    right: 0;
+}
+
+.center {
+    text-align: center;
+}
+
+.line {
+    border-left: 1px solid black;
+    height: 700px;
+}
+
+#watchlistList button {
+    margin-right: 10px;
+}
+
+/* Updated styles for the item notifications */
+.notification {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.notification button {
+    float: left;
+    cursor: pointer;
+    background-color: #ff5555;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    margin-right: 8px;
+}
+
+.notification span {
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.notification a {
+    display: inline-block;
+    margin-top: 8px;
+}
