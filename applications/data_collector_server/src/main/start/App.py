@@ -101,8 +101,8 @@ def process_message(body):
 #init
 #----------------------------------------------------------------------------------
 if __name__ == '__main__':
-    rabbitmq_host = os.environ.get('RABBITMQ_HOST', 'localhost')
-    connection = pika.BlockingConnection(pika.ConnectionParameters(rabbitmq_host, 5672)) #TODO - replace with localhost
+    #rabbitmq_host = os.environ.get('RABBITMQ_HOST', 'localhost') - for docker
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672)) #TODO - replace with localhost
     channel = connection.channel()
     channel.queue_declare(queue='shopping')
 

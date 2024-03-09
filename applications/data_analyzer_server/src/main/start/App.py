@@ -25,8 +25,8 @@ lock = threading.Lock() #added to combat race issue
 def setup_rabbitmq():
     try:
         
-        rabbitmq_host = os.environ.get('RABBITMQ_HOST', 'localhost')
-        connection = pika.BlockingConnection(pika.ConnectionParameters(rabbitmq_host, 5672))
+        #rabbitmq_host = os.environ.get('RABBITMQ_HOST', 'localhost')
+        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672))
         channel = connection.channel()
         channel.queue_declare(queue='shopping')
         channel.queue_declare(queue='new_items')
@@ -148,7 +148,6 @@ def automatic_database_updater(directory_path, timeTS:int, testing:str):
 #init
 #----------------------------------------------------------------------------------
 if __name__ == '__main__':
-    rabbitmq_host = os.environ.get('RABBITMQ_HOST', 'localhost')
     rabbitmq_connection, rabbitmq_channel = setup_rabbitmq()
 
     print(' [*] Waiting for database to analyze. To exit press CTRL+C')

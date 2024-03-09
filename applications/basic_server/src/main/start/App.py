@@ -26,8 +26,8 @@ new_items_by_watchlist ={}
 #----------------------------------------------------------------------------------
 def setup_rabbitmq():
     try:
-        rabbitmq_host = os.environ.get('RABBITMQ_HOST', 'localhost')
-        connection = pika.BlockingConnection(pika.ConnectionParameters(rabbitmq_host, 5672))
+        #rabbitmq_host = os.environ.get('RABBITMQ_HOST', 'localhost')
+        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672))
         channel = connection.channel()
         channel.queue_declare(queue='shopping')
         channel.queue_declare(queue='new_items')
@@ -234,5 +234,5 @@ if __name__ == "__main__":
     # Register the function to close RabbitMQ connections on exit
     atexit.register(close_rabbitmq_connections)
     
-    app.run(host='0.0.0.0', port=5000, debug=True)
-    #app.run(debug=True, use_reloader=False)
+    #app.run(host='0.0.0.0', port=5000, debug=True) #docker
+    app.run(debug=True, use_reloader=False)
