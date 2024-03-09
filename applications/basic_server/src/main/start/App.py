@@ -8,14 +8,13 @@ import threading
 from copy import copy
 import signal
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
+#import logging
+#logging.basicConfig(level=logging.DEBUG)
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.abspath(os.path.join(current_dir, "..", "..", "..", "..", ".."))
 sys.path.append(root_dir)
 from components.web_support.src.Error_Handler import Error_Handler
-from applications.data_collector_server.src.main.start.App import collect_data # for integration test
 
 lock = threading.Lock()
 #app = Flask(__name__, template_folder='../resources/templates')
