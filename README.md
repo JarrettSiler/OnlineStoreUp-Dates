@@ -10,7 +10,10 @@ The following application uses 3 servers to complete a web scraping and monitori
 
 -The data analyzer monitors the watchlist databases delivered by the collector and compares the items in the database to an existing databases (if there are any)- sending new items added via rabbitmq to the web server and sending requests to the data collector in the same rabbitmq queue that the web server sends requests in (that way the items are gathered from the shopping site again - in case a new item was added)
 
+(see image in root)
+![alt text](image.png)
 ----------------------------------------------------------------------------------
+DESIGN DECISIONS:
 Database directory:
 
 the created databases will rotate between 3 states:
@@ -20,8 +23,12 @@ the created databases will rotate between 3 states:
 -Watchlist (The final product of each database)
 
 Each state has a directory underneath the root_directory/database_storage
-(observe during run)
+(observe during run). This method of updating databases was used to seperate the diffenent stages of information processing by physical barriers. This prevents unintended operations on watchlists.
 
+NoSQL databases are designed for distributed data stores that have extremely large data storage needs. That is why this application uses NoSQL databases. The number of items in an online shop can easily exceed 200+, and information needs to be easily accesable for each entry. This type of database allows for that.
+
+SYSTEM REQUIREMENTS:
+This application is very simple, and should not take a beefy machine to run.
 ----------------------------------------------------------------------------------
 CI/CD
 ----------------------------------------------------------------------------------
