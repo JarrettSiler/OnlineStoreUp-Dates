@@ -3,9 +3,13 @@ import atexit
 import json
 from flask import Flask, request, render_template, jsonify, redirect, url_for
 import pika
+from pika.exceptions import StreamLostError
 import threading
 from copy import copy
 import signal
+
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.abspath(os.path.join(current_dir, "..", "..", "..", "..", ".."))
@@ -23,7 +27,8 @@ new_items_by_watchlist ={}
 #----------------------------------------------------------------------------------
 def setup_rabbitmq():
     try:
-        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', 5672)) #TODO- Use 'localhost' if running from cmd prompt
+        rabbitmq_host = os.environ.get('RABBITMQ_HOST', 'localhost')
+        connection = pika.BlockingConnection(pika.ConnectionParameters(rabbitmq_host, 5672))
         channel = connection.channel()
         channel.queue_declare(queue='shopping')
         channel.queue_declare(queue='new_items')
@@ -169,23 +174,35 @@ def delete_watchlist():
 
 @app.route('/process_form', methods=['POST'])
 def process_form():
-    if request.method == 'POST':
-        # Retrieve form data
-        itemName = request.form.get('itemName')
-        zipCode = request.form.get('zipCode')
+    try:
+        if request.method == 'POST':
+            # Retrieve form data
+            itemName = request.form.get('itemName')
+            zipCode = request.form.get('zipCode')
 
-        if not No_Empty_Value(itemName, zipCode):
-            return Error_Handler.EmptyValueError
-        if not Valid_Zip_Code(zipCode):
-            return Error_Handler.zipCodeError
+            if not No_Empty_Value(itemName, zipCode):
+                return Error_Handler.EmptyValueError
+            if not Valid_Zip_Code(zipCode):
+                return Error_Handler.zipCodeError
 
-        data = {
-            'itemname': itemName, 'zipcode': zipCode
-        }
-        message_variables = json.dumps(data)
-        rabbitmq_channel.basic_publish(exchange='', routing_key='shopping', body=message_variables)
+            data = {
+                'itemname': itemName, 'zipcode': zipCode
+            }
+            message_variables = json.dumps(data)
+            rabbitmq_channel.basic_publish(exchange='', routing_key='shopping', body=message_variables)
 
-        return redirect(url_for('new_watchlist'))
+            return redirect(url_for('new_watchlist'))
+
+    except StreamLostError as e:
+        # Handle RabbitMQ connection issues
+        app.logger.error(f'RabbitMQ connection error: {e}')
+        # You can add additional recovery mechanisms here if needed
+        return Error_Handler.rabbitMQConnectionError
+
+    except Exception as e:
+        # Handle other exceptions
+        app.logger.error(f'Error processing form: {e}')
+        return Error_Handler.genericError
 
 def Show_Watchlist(name, itemCount):
     return render_template('WatchList.html', active_watchlists=active_watchlists)
@@ -218,4 +235,5 @@ if __name__ == "__main__":
     # Register the function to close RabbitMQ connections on exit
     atexit.register(close_rabbitmq_connections)
     
-    app.run(debug=True, use_reloader=False)
+    app.run(host='0.0.0.0', port=5000, debug=True)
+    #app.run(debug=True, use_reloader=False)

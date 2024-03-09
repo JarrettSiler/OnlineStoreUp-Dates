@@ -7,6 +7,9 @@ import pika
 from pika import BlockingConnection
 import json
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.abspath(os.path.join(current_dir, "..", "..", "..", "..", ".."))
 sys.path.append(root_dir)
@@ -98,8 +101,8 @@ def process_message(body):
 #init
 #----------------------------------------------------------------------------------
 if __name__ == '__main__':
-
-    connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', 5672)) #TODO - replace with localhost
+    rabbitmq_host = os.environ.get('RABBITMQ_HOST', 'localhost')
+    connection = pika.BlockingConnection(pika.ConnectionParameters(rabbitmq_host, 5672)) #TODO - replace with localhost
     channel = connection.channel()
     channel.queue_declare(queue='shopping')
 

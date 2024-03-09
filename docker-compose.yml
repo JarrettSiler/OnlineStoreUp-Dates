@@ -17,11 +17,13 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./applications/basic_server/src/main/start:/project/app  # Mount your app directory into the container
+      - ./applications/basic_server/src/main/start:/project/app 
     ports:
-      - "8001:80"  # Map port 80 from the container to port 8001 on the host
-    working_dir: /project  # Set the working directory within the container
-    command: ["python", "applications/basic_server/src/main/start/App.py"]  # Specify the entry point script
+      - "5000:5000"  
+    working_dir: /project
+    command: ["./wait-for-it.sh", "-t", "1000", "rabbitmq:5672", "--", "python", "applications/basic_server/src/main/start/App.py"]  # Specify the wait time for app wait for rabbit
+    environment:
+      RABBITMQ_HOST: "rabbitmq"
 
   data_collector:
     depends_on:
@@ -32,9 +34,11 @@ services:
     volumes:
       - ./applications/data_collector_server/src/main/start:/project/app
     ports:
-      - "8002:80"
+      - "5001:80" #probably the wrong internal port, but irrelevant
     working_dir: /project
-    command: ["python", "applications/data_collector_server/src/main/start/App.py"]
+    command: ["./wait-for-it.sh", "-t", "1000", "rabbitmq:5672", "--", "python", "applications/data_collector_server/src/main/start/App.py"]
+    environment:
+      RABBITMQ_HOST: "rabbitmq"
 
   data_analyzer:
     depends_on:
@@ -45,6 +49,8 @@ services:
     volumes:
       - ./applications/data_analyzer_server/src/main/start:/project/app
     ports:
-      - "8003:80"
+      - "5002:80" #probably the wrong internal port, but irrelevant
     working_dir: /project
-    command: ["python", "applications/data_analyzer_server/src/main/start/App.py"]
+    command: ["./wait-for-it.sh", "-t", "1000", "rabbitmq:5672", "--", "python", "applications/data_analyzer_server/src/main/start/App.py"]
+    environment:
+      RABBITMQ_HOST: "rabbitmq"
